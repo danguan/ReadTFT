@@ -17,6 +17,8 @@ except ImportError:
 
 import pytesseract
 
+NUM_CHAMPS_IN_SHOP = 5
+
 
 class Resolution(TypedDict):
     width: int
@@ -81,20 +83,11 @@ def _get_shop_champs_roi_width_interval(
 def main():
     matplotlib.rcParams["figure.dpi"] = 300
 
-    base_resolution_h = 1011
-    base_resolution_w = 1680
-
-    # Manually defined tuples for low and high values for height and width
-    # Used to substitute cropping
-    # Height/width calculated for base resolution
-    roi_height = (975, 1000)
-    # TODO: Use first width tuple as a starting point to find spacing between
-    # boxes, based on screenshot size or screen resolution
-    roi_widths = (390, 530), (580, 720), (770, 910), (960, 1100), (1150, 1290)
-
     # Import the image
-    img = plt.imread("../images/Screen19.png")
+    img = plt.imread("../images/1680x1050.png")
     img_h, img_w, _ = img.shape
+    # >>> print(img_h, img_w)
+    # 1001 1680
 
     img = (img * 255).astype(np.uint8)
 
@@ -105,15 +98,24 @@ def main():
         255,
         cv2.THRESH_BINARY_INV,
     )
-    for (roi_lo_w, roi_hi_w) in roi_widths:
-        lo_h = img_h * roi_height[0] // base_resolution_h
-        hi_h = img_h * roi_height[1] // base_resolution_h
-        lo_w = img_w * roi_lo_w // base_resolution_w
-        hi_w = img_w * roi_hi_w // base_resolution_w
-        roi = img[lo_h:hi_h, lo_w:hi_w]
+
+    resolution: Resolution = {"width": img_w, "height": img_h}
+    roi_lo_h, roi_hi_h = _get_shop_champs_roi_height(resolution)
+    roi_lo_w, roi_hi_w, interval = _get_shop_champs_roi_width_interval(
+        resolution
+    )
+
+    for _ in range(NUM_CHAMPS_IN_SHOP):
+        roi = img[roi_lo_h:roi_hi_h, roi_lo_w:roi_hi_w]
         text = pytesseract.image_to_string(roi)
         print(text)
-        cv2.rectangle(img, (lo_w, lo_h), (hi_w, hi_h), (0, 0, 255), 2)
+
+        # Optionally add visible rectangle
+        cv2.rectangle(
+            img, (roi_lo_w, roi_lo_h), (roi_hi_w, roi_hi_h), (0, 0, 255), 2
+        )
+        roi_lo_w += interval
+        roi_hi_w += interval
 
     plt.imshow(img)
     plt.show()
