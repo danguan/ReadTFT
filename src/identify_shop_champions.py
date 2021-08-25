@@ -71,7 +71,11 @@ def _get_shop_champs_roi_width_interval(
 
     if resolution_wh in resolution_width_roi_mapping:
         return resolution_width_roi_mapping[resolution_wh]
-    return (0, 0)  # TODO(Dan): Return best estimate if resolution isn't mapped
+    return (
+        0,
+        0,
+        0,
+    )  # TODO(Dan): Return best estimate if resolution isn't mapped
 
 
 def main():
