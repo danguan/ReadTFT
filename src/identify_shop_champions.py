@@ -1,4 +1,5 @@
-"""Base module to run OCR on input screenshot to identify players/HP totals.
+"""Base module to run OCR on input screenshot to identify champions within
+player's shop.
 """
 #!/usr/bin/python3.8
 
