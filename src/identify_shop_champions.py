@@ -106,6 +106,14 @@ def _get_shop_champs_roi_width_interval(
 
 
 def identify_shop_champions(img_path: str) -> List[str]:
+    """Identifies the names of the five champions presented in the shop.
+
+    Args:
+        img_path: Path of image to identify champions within.
+
+    Returns:
+        List of names for the five champions identified within the shop.
+    """
     matplotlib.rcParams["figure.dpi"] = 300
 
     # Import the image
