@@ -24,8 +24,8 @@ class Resolution(TypedDict):
     height: int
 
 
-def _get_shop_champs_roi_height(resolution: Resolution) -> Tuple[int, int]:
-    """Returns shop's champion names ROI height based on resolution.
+def _get_shop_champs_roi_height(height: int) -> Tuple[int, int]:
+    """Returns shop's champion names ROI height based on input height.
 
     Height is assumed to be uniform, so output tuple contains the lower/upper
     bounds of all champions' name heights.
@@ -38,26 +38,21 @@ def _get_shop_champs_roi_height(resolution: Resolution) -> Tuple[int, int]:
         region of interest, i.e. champions' names only, excluding gold value.
     """
     resolution_height_roi_mapping = {
-        (1024, 768): (740, 758),
-        (1152, 864): (833, 854),
-        (1280, 720): (694, 710),
-        (1280, 768): (740, 758),
-        (1280, 800): (771, 790),
-        (1280, 960): (925, 950),
-        (1280, 1001): (965, 991),
-        (1360, 768): (740, 758),
-        (1366, 768): (740, 758),
-        (1440, 900): (867, 890),
-        (1600, 900): (867, 890),
-        (1600, 1001): (965, 991),
-        (1680, 1001): (965, 991),
-        (1904, 1001): (965, 991),
+        720: (694, 710),
+        768: (740, 758),
+        800: (771, 790),
+        864: (833, 854),
+        900: (867, 890),
+        960: (925, 950),
+        1001: (965, 991),
     }
-    resolution_wh = (resolution["width"], resolution["height"])
 
-    if resolution_wh in resolution_height_roi_mapping:
-        return resolution_height_roi_mapping[resolution_wh]
-    return (0, 0)  # TODO(Dan): Return best estimate if resolution isn't mapped
+    if height in resolution_height_roi_mapping:
+        return resolution_height_roi_mapping[height]
+
+    # Estimation function created from existing points
+    estimated_upper_bound = int(0.964 * height - 0.104)
+    return (estimated_upper_bound, height - 10)
 
 
 def _get_shop_champs_roi_width_interval(
@@ -133,7 +128,7 @@ def identify_shop_champions(img_path: str) -> List[str]:
     )
 
     resolution: Resolution = {"width": img_w, "height": img_h}
-    roi_lo_h, roi_hi_h = _get_shop_champs_roi_height(resolution)
+    roi_lo_h, roi_hi_h = _get_shop_champs_roi_height(resolution["height"])
     roi_lo_w, roi_hi_w, interval = _get_shop_champs_roi_width_interval(
         resolution
     )
