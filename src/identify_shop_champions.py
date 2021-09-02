@@ -1,15 +1,13 @@
 """Base module to run OCR on input screenshot to identify champions within
 player's shop.
 """
-#!/usr/bin/python3.8
-
 # %%
 import cv2
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-from typing import Tuple, TypedDict
+from typing import List, Tuple, TypedDict
 
 try:
     from PIL import Image
@@ -107,11 +105,11 @@ def _get_shop_champs_roi_width_interval(
     )  # TODO(Dan): Return best estimate if resolution isn't mapped
 
 
-def main():
+def identify_shop_champions(img_path: str) -> List[str]:
     matplotlib.rcParams["figure.dpi"] = 300
 
     # Import the image
-    img = plt.imread("../images/1680x1050.png")
+    img = plt.imread(img_path)
     img_h, img_w, _ = img.shape
     # >>> print(img_h, img_w)
     # 1001 1680
@@ -132,10 +130,12 @@ def main():
         resolution
     )
 
+    champion_names = []
+
     for _ in range(NUM_CHAMPS_IN_SHOP):
         roi = img[roi_lo_h:roi_hi_h, roi_lo_w:roi_hi_w]
         text = pytesseract.image_to_string(roi)
-        print(text)
+        champion_names.append(text)
 
         # Optionally add visible rectangle
         cv2.rectangle(
@@ -147,8 +147,7 @@ def main():
     plt.imshow(img)
     plt.show()
 
+    return champion_names
 
-if __name__ == "__main__":
-    main()
 
 # %%
