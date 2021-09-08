@@ -11,5 +11,6 @@ setup(
         "opencv-python",
         "Pillow",
         "pytesseract",
+        "pytest",
     ],
 )
