@@ -134,11 +134,15 @@ def identify_shop_champions(img_path: str) -> List[str]:
     )
 
     champion_names = []
+    char_whitelist = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\\'"
 
     for _ in range(NUM_CHAMPS_IN_SHOP):
         roi = img[roi_lo_h:roi_hi_h, roi_lo_w:roi_hi_w]
-        text = pytesseract.image_to_string(roi)
-        champion_names.append(text)
+        text = pytesseract.image_to_string(
+            roi,
+            config=f"--psm 13 -c tessedit_char_whitelist={char_whitelist}",
+        )
+        champion_names.append(text.strip())
 
         # Optionally add visible rectangle
         cv2.rectangle(
