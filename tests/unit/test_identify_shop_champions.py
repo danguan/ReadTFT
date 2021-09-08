@@ -5,9 +5,9 @@ import os
 from typing import List, Tuple
 
 import pytest
-import src.services.identify_shop_champions as sut
-from src.services.identify_shop_champions import Resolution
-from src.utils import ROOT_DIR
+import src.readtft.services.identify_shop_champions as sut
+from src.readtft.services.identify_shop_champions import Resolution
+from src.readtft.utils import ROOT_DIR
 
 
 @pytest.fixture(name="images_dir")
