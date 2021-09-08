@@ -38,4 +38,8 @@ jobs:
       - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
-          command: python3.8 -m pytest
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y tesseract-ocr
+            sudo apt-get install -y libtesseract-dev
+            python3.8 -m pytest
